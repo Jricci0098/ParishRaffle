@@ -1,0 +1,12 @@
+{
+  "name": "raffle-demo-recorder",
+  "private": true,
+  "type": "module",
+  "description": "Automated Playwright walkthrough that records a demo video of Picnic Raffle Manager.",
+  "scripts": {
+    "record": "node record-demo.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.49.1"
+  }
+}

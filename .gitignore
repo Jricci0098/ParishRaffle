@@ -27,3 +27,10 @@ backups/
 .idea/
 .vscode/
 *.log
+
+# Demo recorder artifacts
+demo/node_modules/
+demo/videos/
+demo/recording.db
+demo/recording.db-*
+demo/package-lock.json
