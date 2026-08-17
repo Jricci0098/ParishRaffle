@@ -112,6 +112,39 @@ docker compose --profile postgres up -d
 
 ---
 
+## Deploy a public demo to Google Cloud Run
+
+Cloud Run builds the image with Cloud Build (no local Docker needed) and gives
+you a public HTTPS URL.
+
+```bash
+# one-time: install gcloud and authenticate
+gcloud auth login
+
+# deploy (edit the values or pass them as environment variables)
+PROJECT_ID=your-project-id REGION=us-central1 ./deploy/deploy-cloudrun.sh
+```
+
+The script enables the required APIs and deploys the service
+`--allow-unauthenticated` (public). It prints the URL and the generated **Admin
+PIN** at the end.
+
+**Important notes for a public demo:**
+
+- The volunteer screens (`/sales`, `/drawing`, `/pickup`) are intentionally
+  unauthenticated — that is what lets visitors play with the demo. Only the
+  admin screens are PIN-protected, and the script sets a **non-default admin
+  PIN** so visitors cannot close sales or wipe data. For real event use, keep
+  the server on a trusted local network rather than the public Internet.
+- The service runs as a **single always-on instance** (`--max-instances 1
+  --min-instances 1`), because ticket assignment relies on an in-process lock
+  and an in-memory SQLite database. Set `--min-instances 0` to save cost; the
+  demo data then resets on a cold start.
+- SQLite lives under `/tmp` (ephemeral). For durable data, deploy Cloud SQL
+  (PostgreSQL) and set `DATABASE_URL` accordingly.
+
+---
+
 ## Local development (without Docker)
 
 **Backend:**

@@ -31,4 +31,6 @@ EXPOSE 8000
 
 # A single worker is used so the in-process ticket-assignment lock guarantees
 # no overlapping ticket numbers (see backend/app/services/sales.py).
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+# Shell form so ${PORT} (injected by Cloud Run and similar platforms) is honored;
+# falls back to 8000 for local/Docker Compose use.
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1
