@@ -49,16 +49,19 @@ voice-over — no cloud services.
 
 ```bash
 # Dependencies (Linux): a TTS engine, a full ffmpeg, and Pillow.
-sudo apt-get install -y espeak-ng
+sudo apt-get install -y libttspico-utils   # pico2wave (default voice)
+# optional robotic fallback: sudo apt-get install -y espeak-ng
 pip install imageio-ffmpeg pillow
 
-python build_narrated.py     # -> media/raffle-end-to-end.mp4
+python build_narrated.py            # -> media/raffle-end-to-end.mp4
+TTS_BACKEND=espeak python build_narrated.py   # use espeak instead of pico
 ```
 
 Edit the title text and the timed narration cues near the bottom of
 `build_narrated.py`. Title cards are rendered with Pillow (DejaVu fonts),
-narration with `espeak-ng`, and everything is muxed with the ffmpeg bundled by
-`imageio-ffmpeg` (H.264 + AAC).
+narration by `pico2wave` (SVOX Pico — set `TTS_BACKEND=espeak` for espeak-ng),
+and everything is muxed with the ffmpeg bundled by `imageio-ffmpeg`
+(H.264 + AAC).
 
 ## Notes
 

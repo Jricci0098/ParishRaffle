@@ -29,7 +29,10 @@ W, H, FPS, AR = 1280, 720, 25, 44100
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 FONT_REG = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 
-VOICE = ["-v", "en-us+f3", "-s", "158", "-p", "42", "-g", "3"]
+# TTS backend: "pico" (SVOX Pico — smoother, natural) or "espeak" (robotic).
+TTS_BACKEND = os.getenv("TTS_BACKEND", "pico")
+PICO_LANG = os.getenv("PICO_LANG", "en-US")
+ESPEAK_VOICE = ["-v", "en-us+f3", "-s", "158", "-p", "42", "-g", "3"]
 
 
 def run(cmd):
@@ -44,7 +47,10 @@ def probe_duration(path):
 
 
 def tts(text, out_wav):
-    subprocess.run(["espeak-ng", *VOICE, "-w", out_wav, text], check=True)
+    if TTS_BACKEND == "pico":
+        subprocess.run(["pico2wave", "-l", PICO_LANG, "-w", out_wav, text], check=True)
+    else:
+        subprocess.run(["espeak-ng", *ESPEAK_VOICE, "-w", out_wav, text], check=True)
     with wave.open(out_wav) as w:
         return w.getnframes() / w.getframerate()
 
