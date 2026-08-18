@@ -41,6 +41,25 @@ BASE_URL=https://picnic-raffle-207884166310.us-central1.run.app ADMIN_PIN=0068 n
 The finished video path is printed at the end (`VIDEO_SETUP=…`, `VIDEO_OPERATOR=…`,
 `VIDEO_DISPLAY=…`).
 
+## Narrated end-to-end video
+
+`build_narrated.py` stitches the three clips into a single MP4
+(`media/raffle-end-to-end.mp4`) with on-screen title cards and an offline
+voice-over — no cloud services.
+
+```bash
+# Dependencies (Linux): a TTS engine, a full ffmpeg, and Pillow.
+sudo apt-get install -y espeak-ng
+pip install imageio-ffmpeg pillow
+
+python build_narrated.py     # -> media/raffle-end-to-end.mp4
+```
+
+Edit the title text and the timed narration cues near the bottom of
+`build_narrated.py`. Title cards are rendered with Pillow (DejaVu fonts),
+narration with `espeak-ng`, and everything is muxed with the ffmpeg bundled by
+`imageio-ffmpeg` (H.264 + AAC).
+
 ## Notes
 
 - Playwright records WebM (VP8), which plays in Chrome, Edge, Firefox and VLC.

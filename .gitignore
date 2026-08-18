@@ -34,3 +34,4 @@ demo/videos/
 demo/recording.db
 demo/recording.db-*
 demo/package-lock.json
+demo/build/
