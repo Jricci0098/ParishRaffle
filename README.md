@@ -7,6 +7,26 @@ network, and to keep working **even with no Internet access**.
 
 ---
 
+## 🎬 Demo
+
+Two short screen recordings, produced automatically by
+[`demo/record-demo.mjs`](demo/record-demo.mjs) — no manual screen capture:
+
+| Public TV display — live winner board | Volunteer workflow — sale → draw → pickup |
+| :-----------------------------------: | :---------------------------------------: |
+| [![TV display demo](demo/media/tv-display-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-tv-display-demo.webm) | [![Operator demo](demo/media/operator-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-operator-demo.webm) |
+
+**▶ Click a thumbnail to play** (WebM — plays in Chrome, Edge, Firefox, VLC).
+On github.com the players can also embed inline:
+
+<video src="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-tv-display-demo.webm" poster="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/tv-display-poster.png" controls width="100%"></video>
+
+<video src="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-operator-demo.webm" poster="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/operator-poster.png" controls width="100%"></video>
+
+Regenerate them against any running instance — see [`demo/README.md`](demo/README.md).
+
+---
+
 ## What the application does
 
 It automates the whole raffle workflow:
