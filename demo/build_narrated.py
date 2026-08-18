@@ -13,6 +13,7 @@ Run: backend/.venv/bin/python demo/build_narrated.py
 import os
 import re
 import subprocess
+import sys
 import wave
 
 import imageio_ffmpeg
@@ -26,13 +27,48 @@ os.makedirs(BUILD, exist_ok=True)
 FF = imageio_ffmpeg.get_ffmpeg_exe()
 W, H, FPS, AR = 1280, 720, 25, 44100
 
-FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-FONT_REG = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+# Cross-platform font resolution (Linux / Windows / macOS).
+def _resolve_font(candidates, env):
+    p = os.getenv(env)
+    if p and os.path.exists(p):
+        return p
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    return None
 
-# TTS backend: "pico" (SVOX Pico — smoother, natural) or "espeak" (robotic).
+
+FONT_BOLD = _resolve_font([
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+    "C:/Windows/Fonts/arialbd.ttf",
+    "C:/Windows/Fonts/segoeuib.ttf",
+    "C:/Windows/Fonts/calibrib.ttf",
+    "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+], "FONT_BOLD")
+FONT_REG = _resolve_font([
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    "C:/Windows/Fonts/arial.ttf",
+    "C:/Windows/Fonts/segoeui.ttf",
+    "C:/Windows/Fonts/calibri.ttf",
+    "/System/Library/Fonts/Supplemental/Arial.ttf",
+], "FONT_REG")
+
+
+def font(bold, size):
+    path = FONT_BOLD if bold else FONT_REG
+    return ImageFont.truetype(path, size) if path else ImageFont.load_default()
+
+
+# TTS backend: "piper" (neural, most natural), "pico" (SVOX Pico), or
+# "espeak" (robotic fallback).
 TTS_BACKEND = os.getenv("TTS_BACKEND", "pico")
 PICO_LANG = os.getenv("PICO_LANG", "en-US")
 ESPEAK_VOICE = ["-v", "en-us+f3", "-s", "158", "-p", "42", "-g", "3"]
+# Piper: model name (or full path to a .onnx) and the dir the voice was
+# downloaded to. Default data dir is the repo root, where
+# `python -m piper.download_voices <name>` puts the files by default.
+PIPER_MODEL = os.getenv("PIPER_MODEL", "en_US-lessac-medium")
+PIPER_DATA_DIR = os.getenv("PIPER_DATA_DIR", os.path.dirname(HERE))
 
 
 def run(cmd):
@@ -47,7 +83,14 @@ def probe_duration(path):
 
 
 def tts(text, out_wav):
-    if TTS_BACKEND == "pico":
+    if TTS_BACKEND == "piper":
+        # Neural voice. Reads text from stdin; resolves the model by name in
+        # PIPER_DATA_DIR (or accepts a full .onnx path in PIPER_MODEL).
+        cmd = [sys.executable, "-m", "piper", "-m", PIPER_MODEL, "-f", out_wav]
+        if not PIPER_MODEL.endswith(".onnx"):
+            cmd += ["--data-dir", PIPER_DATA_DIR]
+        subprocess.run(cmd, input=text.encode("utf-8"), check=True)
+    elif TTS_BACKEND == "pico":
         subprocess.run(["pico2wave", "-l", PICO_LANG, "-w", out_wav, text], check=True)
     else:
         subprocess.run(["espeak-ng", *ESPEAK_VOICE, "-w", out_wav, text], check=True)
@@ -73,13 +116,10 @@ def make_title(path, title, subtitle, step=None):
         d.text(((W - (bb[2] - bb[0])) / 2, y), text, font=font, fill=fill)
 
     if step:
-        f_step = ImageFont.truetype(FONT_BOLD, 40)
-        center(step, f_step, 210, (147, 197, 253))
-    f_title = ImageFont.truetype(FONT_BOLD, 84)
-    center(title, f_title, 285, (255, 255, 255))
+        center(step, font(True, 40), 210, (147, 197, 253))
+    center(title, font(True, 84), 285, (255, 255, 255))
     if subtitle:
-        f_sub = ImageFont.truetype(FONT_REG, 36)
-        center(subtitle, f_sub, 410, (203, 213, 225))
+        center(subtitle, font(False, 36), 410, (203, 213, 225))
     img.save(path)
 
 

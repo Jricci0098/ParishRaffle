@@ -47,21 +47,44 @@ The finished video path is printed at the end (`VIDEO_SETUP=…`, `VIDEO_OPERATO
 (`media/raffle-end-to-end.mp4`) with on-screen title cards and an offline
 voice-over — no cloud services.
 
+Three voice backends via `TTS_BACKEND`:
+
+- **`piper`** — neural, most natural (recommended). Needs the `piper-tts` pip
+  package and a downloaded voice model.
+- **`pico`** (default) — SVOX Pico, smooth; Linux `libttspico-utils`.
+- **`espeak`** — robotic fallback; Linux `espeak-ng`.
+
 ```bash
-# Dependencies (Linux): a TTS engine, a full ffmpeg, and Pillow.
-sudo apt-get install -y libttspico-utils   # pico2wave (default voice)
-# optional robotic fallback: sudo apt-get install -y espeak-ng
 pip install imageio-ffmpeg pillow
 
-python build_narrated.py            # -> media/raffle-end-to-end.mp4
-TTS_BACKEND=espeak python build_narrated.py   # use espeak instead of pico
+# --- Neural voice (Piper) ---
+pip install piper-tts
+python -m piper.download_voices en_US-lessac-medium   # downloads to CWD
+TTS_BACKEND=piper python demo/build_narrated.py        # run from the repo root
 ```
 
+Windows PowerShell:
+
+```powershell
+pip install imageio-ffmpeg pillow piper-tts
+python -m piper.download_voices en_US-lessac-medium
+$env:TTS_BACKEND = "piper"
+python demo\build_narrated.py           # -> demo\media\raffle-end-to-end.mp4
+```
+
+```bash
+# --- Offline Linux voices (no model download) ---
+sudo apt-get install -y libttspico-utils          # pico (default)
+python demo/build_narrated.py
+TTS_BACKEND=espeak python demo/build_narrated.py   # robotic fallback
+```
+
+`PIPER_MODEL` (name or full `.onnx` path) and `PIPER_DATA_DIR` (defaults to the
+repo root, where `download_voices` puts the files) override the Piper voice.
 Edit the title text and the timed narration cues near the bottom of
-`build_narrated.py`. Title cards are rendered with Pillow (DejaVu fonts),
-narration by `pico2wave` (SVOX Pico — set `TTS_BACKEND=espeak` for espeak-ng),
-and everything is muxed with the ffmpeg bundled by `imageio-ffmpeg`
-(H.264 + AAC).
+`build_narrated.py`. Title cards render with Pillow (auto-detects DejaVu on
+Linux, Arial/Segoe on Windows), and everything is muxed with the ffmpeg bundled
+by `imageio-ffmpeg` (H.264 + AAC).
 
 ## Notes
 
