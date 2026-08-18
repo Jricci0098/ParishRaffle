@@ -1,34 +1,44 @@
 # Automated demo recorder
 
-Drives a real Chromium browser through the whole raffle workflow and records
-video **automatically** — no manual screen capture.
+Drives a real Chromium browser through the raffle and records video
+**automatically** — no manual screen capture. Two recorders:
 
-## Recorded demos
+- **`record-setup.mjs`** — the first-run setup/onboarding walkthrough (admin
+  login → setup wizard → prize management → open sales). Run against an **empty**
+  instance.
+- **`record-demo.mjs`** — the operating workflow (sale → drawing → live TV
+  display → pickup). **Seeds** the instance automatically if it is empty.
+
+## Recorded videos
+
+| 🛠️ Setup walkthrough (first run) |
+| :------------------------------: |
+| [![Setup walkthrough](media/setup-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-setup-demo.webm) |
 
 | Public TV display — live winner board | Volunteer workflow — sale → draw → pickup |
 | :-----------------------------------: | :---------------------------------------: |
 | [![TV display demo](media/tv-display-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-tv-display-demo.webm) | [![Operator demo](media/operator-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-operator-demo.webm) |
 
 Click a thumbnail to play the WebM. Committed copies live in
-[`media/`](media/); regenerate them with the recorder below.
+[`media/`](media/); regenerate them with the recorders below.
 
 ## Run it
-
-You need a running server (local or deployed). The script seeds the raffle
-automatically if it is empty.
 
 ```bash
 cd demo
 npm install                 # installs Playwright (downloads a browser once)
 
-# against a local server
+# Setup walkthrough — point at a FRESH, empty server:
+BASE_URL=http://localhost:8001 ADMIN_PIN=1234 node record-setup.mjs
+
+# Operating demo — local server (auto-seeds if empty):
 BASE_URL=http://localhost:8000 ADMIN_PIN=1234 npm run record
 
-# against the deployed demo
+# …or against the deployed demo:
 BASE_URL=https://picnic-raffle-207884166310.us-central1.run.app ADMIN_PIN=0068 npm run record
 ```
 
-The finished video paths are printed at the end (`VIDEO_OPERATOR=…`,
+The finished video path is printed at the end (`VIDEO_SETUP=…`, `VIDEO_OPERATOR=…`,
 `VIDEO_DISPLAY=…`).
 
 ## Notes

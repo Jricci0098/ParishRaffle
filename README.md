@@ -9,8 +9,20 @@ network, and to keep working **even with no Internet access**.
 
 ## 🎬 Demo
 
-Two short screen recordings, produced automatically by
-[`demo/record-demo.mjs`](demo/record-demo.mjs) — no manual screen capture:
+Short screen recordings, produced automatically by the scripts in
+[`demo/`](demo/) — no manual screen capture.
+
+### 🛠️ Setup walkthrough (first run)
+
+Admin login → **Setup Wizard** (event → ticket ranges → stations → sessions →
+review → start) → **Prize Management** (add a prize + CSV import) → open sales →
+ready to sell.
+
+[![Setup walkthrough](demo/media/setup-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-setup-demo.webm)
+
+<video src="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-setup-demo.webm" poster="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/setup-poster.png" controls width="100%"></video>
+
+### ▶️ In action
 
 | Public TV display — live winner board | Volunteer workflow — sale → draw → pickup |
 | :-----------------------------------: | :---------------------------------------: |
