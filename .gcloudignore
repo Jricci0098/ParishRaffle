@@ -1,0 +1,18 @@
+# Keep the Cloud Build upload small and clean.
+.git/
+**/__pycache__/
+**/*.py[cod]
+backend/.venv/
+backend/.pytest_cache/
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+data/
+pgdata/
+*.db
+*.db-wal
+*.db-shm
+backups/
+.env
+*.log
