@@ -1,12 +1,16 @@
 # Automated demo recorder
 
 Drives a real Chromium browser through the whole raffle workflow and records
-video **automatically** — no manual screen capture. It produces two videos:
+video **automatically** — no manual screen capture.
 
-- `videos/operator-*.webm` — the volunteer walkthrough: ticket sale → drawing
-  console (scan/lookup/confirm) → prize pickup/claim.
-- `videos/display-*.webm` — the public TV board reacting **live** over
-  WebSockets as each winner is confirmed (including the highlight overlay).
+## Recorded demos
+
+| Public TV display — live winner board | Volunteer workflow — sale → draw → pickup |
+| :-----------------------------------: | :---------------------------------------: |
+| [![TV display demo](media/tv-display-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-tv-display-demo.webm) | [![Operator demo](media/operator-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-operator-demo.webm) |
+
+Click a thumbnail to play the WebM. Committed copies live in
+[`media/`](media/); regenerate them with the recorder below.
 
 ## Run it
 
