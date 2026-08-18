@@ -9,8 +9,31 @@ network, and to keep working **even with no Internet access**.
 
 ## 🎬 Demo
 
-Two short screen recordings, produced automatically by
-[`demo/record-demo.mjs`](demo/record-demo.mjs) — no manual screen capture:
+Screen recordings produced automatically by the scripts in
+[`demo/`](demo/) — no manual screen capture.
+
+### 🎥 Full narrated walkthrough (3½ min)
+
+One end-to-end video with title cards and voice-over: **Setup → Sell & Draw →
+Live on the TVs**.
+
+[![Narrated end-to-end walkthrough](demo/media/end-to-end-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-end-to-end.mp4)
+
+<video src="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-end-to-end.mp4" poster="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/end-to-end-poster.png" controls width="100%"></video>
+
+The individual clips below feed into it.
+
+### 🛠️ Setup walkthrough (first run)
+
+Admin login → **Setup Wizard** (event → ticket ranges → stations → sessions →
+review → start) → **Prize Management** (add a prize + CSV import) → open sales →
+ready to sell.
+
+[![Setup walkthrough](demo/media/setup-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-setup-demo.webm)
+
+<video src="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-setup-demo.webm" poster="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/setup-poster.png" controls width="100%"></video>
+
+### ▶️ In action
 
 | Public TV display — live winner board | Volunteer workflow — sale → draw → pickup |
 | :-----------------------------------: | :---------------------------------------: |

@@ -34,3 +34,8 @@ demo/videos/
 demo/recording.db
 demo/recording.db-*
 demo/package-lock.json
+demo/build/
+
+# Piper voice models (downloaded locally)
+*.onnx
+*.onnx.json

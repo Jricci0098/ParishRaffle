@@ -1,35 +1,90 @@
 # Automated demo recorder
 
-Drives a real Chromium browser through the whole raffle workflow and records
-video **automatically** — no manual screen capture.
+Drives a real Chromium browser through the raffle and records video
+**automatically** — no manual screen capture. Two recorders:
 
-## Recorded demos
+- **`record-setup.mjs`** — the first-run setup/onboarding walkthrough (admin
+  login → setup wizard → prize management → open sales). Run against an **empty**
+  instance.
+- **`record-demo.mjs`** — the operating workflow (sale → drawing → live TV
+  display → pickup). **Seeds** the instance automatically if it is empty.
+
+## Recorded videos
+
+| 🛠️ Setup walkthrough (first run) |
+| :------------------------------: |
+| [![Setup walkthrough](media/setup-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-setup-demo.webm) |
 
 | Public TV display — live winner board | Volunteer workflow — sale → draw → pickup |
 | :-----------------------------------: | :---------------------------------------: |
 | [![TV display demo](media/tv-display-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-tv-display-demo.webm) | [![Operator demo](media/operator-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-operator-demo.webm) |
 
 Click a thumbnail to play the WebM. Committed copies live in
-[`media/`](media/); regenerate them with the recorder below.
+[`media/`](media/); regenerate them with the recorders below.
 
 ## Run it
-
-You need a running server (local or deployed). The script seeds the raffle
-automatically if it is empty.
 
 ```bash
 cd demo
 npm install                 # installs Playwright (downloads a browser once)
 
-# against a local server
+# Setup walkthrough — point at a FRESH, empty server:
+BASE_URL=http://localhost:8001 ADMIN_PIN=1234 node record-setup.mjs
+
+# Operating demo — local server (auto-seeds if empty):
 BASE_URL=http://localhost:8000 ADMIN_PIN=1234 npm run record
 
-# against the deployed demo
+# …or against the deployed demo:
 BASE_URL=https://picnic-raffle-207884166310.us-central1.run.app ADMIN_PIN=0068 npm run record
 ```
 
-The finished video paths are printed at the end (`VIDEO_OPERATOR=…`,
+The finished video path is printed at the end (`VIDEO_SETUP=…`, `VIDEO_OPERATOR=…`,
 `VIDEO_DISPLAY=…`).
+
+## Narrated end-to-end video
+
+`build_narrated.py` stitches the three clips into a single MP4
+(`media/raffle-end-to-end.mp4`) with on-screen title cards and an offline
+voice-over — no cloud services.
+
+Three voice backends via `TTS_BACKEND`:
+
+- **`piper`** — neural, most natural (recommended). Needs the `piper-tts` pip
+  package and a downloaded voice model.
+- **`pico`** (default) — SVOX Pico, smooth; Linux `libttspico-utils`.
+- **`espeak`** — robotic fallback; Linux `espeak-ng`.
+
+```bash
+pip install imageio-ffmpeg pillow
+
+# --- Neural voice (Piper) ---
+pip install piper-tts
+python -m piper.download_voices en_US-lessac-medium   # downloads to CWD
+TTS_BACKEND=piper python demo/build_narrated.py        # run from the repo root
+```
+
+Windows PowerShell:
+
+```powershell
+pip install imageio-ffmpeg pillow piper-tts
+python -m piper.download_voices en_US-lessac-medium
+$env:TTS_BACKEND = "piper"
+python demo\build_narrated.py           # -> demo\media\raffle-end-to-end.mp4
+```
+
+```bash
+# --- Offline Linux voices (no model download) ---
+sudo apt-get install -y libttspico-utils          # pico (default)
+python demo/build_narrated.py
+TTS_BACKEND=espeak python demo/build_narrated.py   # robotic fallback
+```
+
+`PIPER_MODEL` (name or full `.onnx` path) and `PIPER_DATA_DIR` (defaults to the
+repo root, where `download_voices` puts the files) override the Piper voice.
+Edit the title text and the timed narration cues near the bottom of
+`build_narrated.py`. Title cards render with Pillow (auto-detects DejaVu on
+Linux, Arial/Segoe on Windows), and everything is muxed with the ffmpeg bundled
+by `imageio-ffmpeg` (H.264 + AAC).
 
 ## Notes
 
