@@ -11,10 +11,10 @@
     ./deploy/deploy-cloudrun.ps1
 
 .EXAMPLE
-    ./deploy/deploy-cloudrun.ps1 -ProjectId spiderfoot-419515 -Region us-central1 -AdminPin 8391
+    ./deploy/deploy-cloudrun.ps1 -ProjectId your-project-id -Region us-central1
 #>
 param(
-    [string]$ProjectId    = $(if ($env:PROJECT_ID) { $env:PROJECT_ID } else { "spiderfoot-419515" }),
+    [string]$ProjectId    = $(if ($env:PROJECT_ID) { $env:PROJECT_ID } else { "your-project-id" }),
     [string]$Region       = $(if ($env:REGION) { $env:REGION } else { "us-central1" }),
     [string]$Service      = "picnic-raffle",
     # A public demo lets anyone reach the volunteer screens (by design). Protect

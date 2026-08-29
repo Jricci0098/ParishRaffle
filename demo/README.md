@@ -34,8 +34,8 @@ BASE_URL=http://localhost:8001 ADMIN_PIN=1234 node record-setup.mjs
 # Operating demo — local server (auto-seeds if empty):
 BASE_URL=http://localhost:8000 ADMIN_PIN=1234 npm run record
 
-# …or against the deployed demo:
-BASE_URL=https://picnic-raffle-207884166310.us-central1.run.app ADMIN_PIN=0068 npm run record
+# …or against a deployed instance:
+BASE_URL=https://your-service.run.app ADMIN_PIN=<admin-pin> npm run record
 ```
 
 The finished video path is printed at the end (`VIDEO_SETUP=…`, `VIDEO_OPERATOR=…`,

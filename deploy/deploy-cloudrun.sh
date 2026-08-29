@@ -11,13 +11,12 @@
 #     (or:  gcloud auth activate-service-account --key-file=KEY.json)
 #
 # Usage:
-#   ./deploy/deploy-cloudrun.sh
-#   PROJECT_ID=spiderfoot-419515 REGION=us-central1 ADMIN_PIN=8391 \
-#     ./deploy/deploy-cloudrun.sh
+#   PROJECT_ID=your-project-id ./deploy/deploy-cloudrun.sh
+#   PROJECT_ID=your-project-id REGION=us-central1 ./deploy/deploy-cloudrun.sh
 #
 set -euo pipefail
 
-PROJECT_ID="${PROJECT_ID:-spiderfoot-419515}"
+PROJECT_ID="${PROJECT_ID:-your-project-id}"
 REGION="${REGION:-us-central1}"
 SERVICE="${SERVICE:-picnic-raffle}"
 # A public demo lets anyone reach the volunteer screens (by design). Protect the

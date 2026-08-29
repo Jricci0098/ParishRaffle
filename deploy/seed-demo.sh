@@ -5,7 +5,7 @@
 #
 # Usage:
 #   ./deploy/seed-demo.sh BASE_URL ADMIN_PIN
-#   ./deploy/seed-demo.sh https://picnic-raffle-207884166310.us-central1.run.app 0068
+#   ./deploy/seed-demo.sh https://your-service.run.app <admin-pin>
 #
 set -euo pipefail
 
