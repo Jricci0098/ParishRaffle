@@ -10,6 +10,7 @@ venv/
 node_modules/
 frontend/dist/
 frontend/.vite/
+*.tsbuildinfo
 
 # Data & backups (never commit event data)
 data/
