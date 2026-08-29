@@ -1,30 +1,18 @@
 # 🎟️ Picnic Raffle Manager
 
-A lightweight, **local-first** web application for running a church picnic
-raffle — from ticket sale, to drawing, to live TV display, to prize pickup.
-Built to be operated by non-technical volunteers on any device on the local
-network, and to keep working **even with no Internet access**.
+A parish picnic raffle sells hundreds of physical tickets across several tables,
+then draws 60–100 prizes in front of a crowd. The bottleneck is the draw: a
+number is called, and someone has to find the matching name in a pile of paper
+stubs while everyone waits. **Picnic Raffle Manager** removes that lookup —
+tickets are recorded as they're sold, and when a number is drawn the winner's
+name appears instantly on the volunteers' screens and on the TVs.
 
----
-
-## 🎬 Demo
-
-Screen recordings produced automatically by the scripts in
-[`demo/`](demo/) — no manual screen capture.
-
-### 🎥 Full narrated walkthrough (3½ min)
-
-One end-to-end video with title cards and voice-over: **Setup → Sell & Draw →
-Live on the TVs**.
-
-[![Narrated end-to-end walkthrough](demo/media/end-to-end-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-end-to-end.mp4)
-
-<video src="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-end-to-end.mp4" poster="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/end-to-end-poster.png" controls width="100%"></video>
-
-It's assembled from three shorter clips — the first-run setup, the volunteer
-workflow (sale → draw → pickup), and the live TV board. Those clips are
-regenerated on demand against any running instance by the Playwright recorders
-in [`demo/`](demo/), so only the finished video is committed here.
+It's built for **non-technical volunteers on whatever devices are on hand**
+(Chromebooks, tablets, phones), and it's **local-first**: the whole system runs
+on one laptop plus a wireless router, with no Internet required — event Wi-Fi
+usually isn't available or trustworthy. Physical stubs remain the source of
+truth; the app speeds up the lookup, it doesn't replace "you must present the
+winning ticket to claim."
 
 ---
 
@@ -87,12 +75,85 @@ server on `http://<server-ip>:8000`**.
 
 ---
 
+## Security model & trust boundaries
+
+This app is designed for **one trusted local network at a single event** — the
+server and every client (sales tablets, the drawing laptop, the TVs) sit on a
+private LAN the organisers control. The auth model is deliberately minimal so
+volunteers aren't fighting logins mid-event.
+
+**Authentication.** Two shared PINs, set via environment variables and compared
+in constant time (`secrets.compare_digest`):
+
+- **Admin PIN** gates every destructive or event-shaping action: open/close
+  sales, start/end sessions, prize create/edit/delete and CSV import, redraw,
+  undo-sale, manual ticket entry, winner overrides, backups, and demo reset.
+- **Volunteer PIN** applies to the write endpoints only when the flag below is
+  on.
+
+There are no user accounts, sessions, or tokens — by design.
+
+**What's unauthenticated, and why.** The read endpoints (winner board, public
+display, ticket lookup, CSV report downloads) and the three *volunteer write*
+endpoints — record a sale, confirm a winner, mark a prize claimed — are
+unauthenticated by default. On a trusted LAN that is the point: every device on
+the network is being operated by a volunteer, and a PIN prompt on every sale is
+friction with no security benefit against someone already on the wire.
+
+**When the assumption breaks.** Exposed to the public Internet, those write
+endpoints become abusable — anyone could record sales or confirm winners. That
+boundary is deployment-specific, so it is a switch rather than a hardcoded
+assumption:
+
+- **`REQUIRE_PIN_FOR_WRITES=true`** requires the volunteer (or admin) PIN on the
+  sale/draw/claim endpoints. **Set it for any Internet-facing deployment.**
+- The hosted demo intentionally leaves it **off** so visitors can click through
+  the whole flow; it holds only throwaway data (ephemeral SQLite) and its admin
+  PIN is set to a non-default value so visitors can't close sales or wipe it.
+
+**Other boundaries, stated plainly:**
+
+- **CORS is `*`** — the server IP varies per venue and all callers are on the
+  trusted LAN. Tighten it if you expose the API beyond that.
+- **Transport is plain HTTP** on the LAN. For an Internet deployment, terminate
+  TLS at a reverse proxy (Cloud Run does this for you).
+- **No rate limiting** — a LAN assumption; add it at the proxy if exposed.
+- **Integrity is prioritised over access control** here: ticket assignment runs
+  under a single-process lock inside one transaction, so concurrent sales can't
+  collide — which means the app must run with **one worker / one instance**;
+  ticket and prize numbers are `UNIQUE`; every state change is written to an
+  **audit log**; and the database is backed up at startup and on an interval.
+- **Physical verification stays human:** winners must present the physical stub
+  at pickup. The app tracks claimed/unclaimed; it does not authenticate people.
+
+Out of scope: account management, roles beyond the two PINs, and secrets
+management — this is a single-event tool, not a multi-tenant service.
+
+---
+
+## 🎬 Demo
+
+A single narrated walkthrough (~3½ min) with title cards and voice-over:
+**Setup → Sell & Draw → Live on the TVs**.
+
+[![Narrated end-to-end walkthrough](demo/media/end-to-end-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-end-to-end.mp4)
+
+<video src="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-end-to-end.mp4" poster="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/end-to-end-poster.png" controls width="100%"></video>
+
+It's stitched from three clips — first-run setup, the volunteer workflow, and
+the live TV board — recorded automatically by the Playwright scripts in
+[`demo/`](demo/); only the finished video is committed.
+
+---
+
 ## Requirements
 
 - **Docker** and **Docker Compose** (recommended), _or_
 - Python 3.11+ and Node.js 20+ for local development.
 
-No cloud services are required.
+No cloud services are required to run it — that's the whole point. A separate
+[Cloud Run path](#deploy-a-public-demo-to-google-cloud-run) is provided only
+for hosting a public demo.
 
 ---
 
@@ -354,6 +415,7 @@ All via environment variables (see `.env.example`):
 | `DISPLAY_ROTATION_SECONDS`     | 8                              | TV page rotation interval                 |
 | `NEW_WINNER_HIGHLIGHT_SECONDS` | 9                              | How long a new winner is spotlighted      |
 | `ALLOW_REPEAT_TICKET_WINNERS`  | false                          | Whether one ticket may win multiple prizes|
+| `REQUIRE_PIN_FOR_WRITES`       | false                          | Require the volunteer/admin PIN on write endpoints (see Security model) |
 
 ---
 
