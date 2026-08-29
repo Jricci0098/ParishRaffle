@@ -8,7 +8,7 @@ from ..schemas import ClaimRequest, RedrawRequest
 from ..services import claims as claims_service
 from ..services import draws as draws_service
 from ..websocket import manager
-from .deps import require_admin
+from .deps import require_admin, require_write_access
 
 router = APIRouter()
 
@@ -46,6 +46,7 @@ def claim(
     prize_id: int,
     body: ClaimRequest,
     db: Session = Depends(get_db),
+    _: str = Depends(require_write_access),
 ):
     prize = claims_service.claim_prize(
         db,

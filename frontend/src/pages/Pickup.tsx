@@ -1,10 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { Confirm } from "../components/Confirm";
 import { DemoBanner } from "../components/DemoBanner";
+import { useConfig } from "../hooks/useConfig";
 import { useWebSocket } from "../hooks/useWebSocket";
-import { ApiError, api } from "../services/api";
+import { ApiError, api, ensureVolunteerPin } from "../services/api";
 import type { PrizeView } from "../types";
 
 export function Pickup() {
@@ -14,6 +15,12 @@ export function Pickup() {
   const [error, setError] = useState("");
   const [confirmPrize, setConfirmPrize] = useState<PrizeView | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const config = useConfig();
+
+  // When the server requires a PIN for writes, capture the volunteer PIN once.
+  useEffect(() => {
+    if (config?.require_pin_for_writes) ensureVolunteerPin();
+  }, [config]);
 
   const search = async () => {
     setBusy(true);

@@ -75,6 +75,7 @@ export interface AppConfig {
   new_winner_highlight_seconds: number;
   winners_per_page: number;
   allow_repeat_ticket_winners: boolean;
+  require_pin_for_writes: boolean;
 }
 
 export interface DeviceInfo {

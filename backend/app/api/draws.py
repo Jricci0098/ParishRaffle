@@ -4,9 +4,11 @@ from sqlalchemy.orm import Session
 from ..config import settings
 from ..database import get_db
 from ..schemas import ConfirmWinner, LookupRequest
+from ..security import pin_matches
 from ..services import draws as draws_service
 from ..services.errors import AuthError
 from ..websocket import manager
+from .deps import require_write_access
 
 router = APIRouter()
 
@@ -22,18 +24,20 @@ def confirm_winner(
     body: ConfirmWinner,
     db: Session = Depends(get_db),
     x_admin_pin: str | None = Header(default=None),
+    _: str = Depends(require_write_access),
 ):
     """Confirm a winning ticket for a prize.
 
-    Overrides (unsold ticket, already-won, manual off-list winner) require the
-    admin PIN.
+    Overrides (unsold ticket, already-won, manual off-list winner) always
+    require the admin PIN. The base confirmation additionally requires a PIN
+    when ``REQUIRE_PIN_FOR_WRITES`` is enabled (see ``require_write_access``).
     """
     needs_admin = (
         body.allow_unsold
         or body.allow_already_won
         or bool(body.manual_first_name or body.manual_last_name)
     )
-    if needs_admin and x_admin_pin != settings.ADMIN_PIN:
+    if needs_admin and not pin_matches(x_admin_pin, settings.ADMIN_PIN):
         raise AuthError("Admin authorisation required for override")
 
     prize = draws_service.confirm_winner(

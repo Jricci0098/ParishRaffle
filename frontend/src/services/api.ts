@@ -107,7 +107,7 @@ export const api = {
 
   // Sales
   createSale: (body: unknown) =>
-    request<SaleResult>("/sales", { method: "POST", body }),
+    request<SaleResult>("/sales", { method: "POST", body, volunteer: true }),
   undoSale: (station_id: number) =>
     request("/sales/undo", { method: "POST", body: { station_id }, admin: true }),
   manualEntry: (body: unknown) =>
@@ -173,6 +173,7 @@ export const api = {
     request<PrizeView>(`/prizes/${id}/claim`, {
       method: "POST",
       body: { verified_by },
+      volunteer: true,
     }),
   redraw: (id: number, reason: string) =>
     request<PrizeView>(`/prizes/${id}/redraw`, {
@@ -235,6 +236,24 @@ export const api = {
     ),
   resetDemo: () => request("/demo/reset", { method: "POST", admin: true }),
 };
+
+/**
+ * When the server runs with REQUIRE_PIN_FOR_WRITES, volunteer screens need a
+ * PIN before they can record sales/claims. Prompt for it once and cache it.
+ * A no-op when a PIN is already stored (or when the flag is off — callers only
+ * invoke this if config.require_pin_for_writes is true).
+ */
+export async function ensureVolunteerPin(): Promise<void> {
+  if (getVolunteerPin() || getAdminPin()) return;
+  const pin = window.prompt("Enter the volunteer PIN to record sales and claims:");
+  if (!pin) return;
+  try {
+    await api.login(pin);
+    setVolunteerPin(pin);
+  } catch {
+    /* Invalid PIN — leave unset; the next write will surface a clear error. */
+  }
+}
 
 /** URL for a CSV report download (opened directly by the browser). */
 export function reportUrl(name: string): string {
