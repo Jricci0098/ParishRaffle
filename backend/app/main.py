@@ -8,6 +8,7 @@ import asyncio
 import json
 import logging
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,7 +25,30 @@ from .websocket import manager
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("raffle")
 
-app = FastAPI(title=settings.APP_NAME)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Initialise the database and start periodic backups; clean up on exit."""
+    init_db()
+    try:  # startup backup is best-effort
+        backup.create_backup(label="startup")
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning("Startup backup failed: %s", exc)
+
+    backup_task = (
+        asyncio.create_task(_periodic_backup())
+        if settings.ENABLE_PERIODIC_BACKUP
+        else None
+    )
+    logger.info("%s started (demo_mode=%s)", settings.APP_NAME, settings.DEMO_MODE)
+    try:
+        yield
+    finally:
+        if backup_task is not None:
+            backup_task.cancel()
+
+
+app = FastAPI(title=settings.APP_NAME, lifespan=lifespan)
 
 # CORS is permissive: devices are on a trusted local network and the origin is
 # not known in advance (server IP varies per venue).
@@ -90,19 +114,6 @@ async def _periodic_backup():
                 logger.info("Automatic backup created: %s", path)
         except Exception as exc:  # pragma: no cover - defensive
             logger.warning("Backup failed: %s", exc)
-
-
-@app.on_event("startup")
-async def on_startup():
-    init_db()
-    # Startup backup (best-effort).
-    try:
-        backup.create_backup(label="startup")
-    except Exception as exc:  # pragma: no cover
-        logger.warning("Startup backup failed: %s", exc)
-    if settings.ENABLE_PERIODIC_BACKUP:
-        asyncio.create_task(_periodic_backup())
-    logger.info("%s started (demo_mode=%s)", settings.APP_NAME, settings.DEMO_MODE)
 
 
 # ----- Serve the built frontend (production) -----
