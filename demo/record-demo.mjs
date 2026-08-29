@@ -176,8 +176,14 @@ async function main() {
   const displayPath = displayVideo ? await displayVideo.path() : null;
   await browser.close();
 
-  console.log("VIDEO_OPERATOR=" + opPath);
-  console.log("VIDEO_DISPLAY=" + displayPath);
+  // Copy to stable names under media/ so build_narrated.py can find them.
+  // (These regenerated clips are gitignored; only the final MP4 is committed.)
+  fs.mkdirSync("media", { recursive: true });
+  if (opPath) fs.copyFileSync(opPath, "media/raffle-operator-demo.webm");
+  if (displayPath) fs.copyFileSync(displayPath, "media/raffle-tv-display-demo.webm");
+
+  console.log("VIDEO_OPERATOR=media/raffle-operator-demo.webm");
+  console.log("VIDEO_DISPLAY=media/raffle-tv-display-demo.webm");
 }
 
 main().catch((e) => {

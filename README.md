@@ -21,32 +21,10 @@ Live on the TVs**.
 
 <video src="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-end-to-end.mp4" poster="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/end-to-end-poster.png" controls width="100%"></video>
 
-The individual clips below feed into it.
-
-### 🛠️ Setup walkthrough (first run)
-
-Admin login → **Setup Wizard** (event → ticket ranges → stations → sessions →
-review → start) → **Prize Management** (add a prize + CSV import) → open sales →
-ready to sell.
-
-[![Setup walkthrough](demo/media/setup-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-setup-demo.webm)
-
-<video src="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-setup-demo.webm" poster="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/setup-poster.png" controls width="100%"></video>
-
-### ▶️ In action
-
-| Public TV display — live winner board | Volunteer workflow — sale → draw → pickup |
-| :-----------------------------------: | :---------------------------------------: |
-| [![TV display demo](demo/media/tv-display-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-tv-display-demo.webm) | [![Operator demo](demo/media/operator-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-operator-demo.webm) |
-
-**▶ Click a thumbnail to play** (WebM — plays in Chrome, Edge, Firefox, VLC).
-On github.com the players can also embed inline:
-
-<video src="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-tv-display-demo.webm" poster="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/tv-display-poster.png" controls width="100%"></video>
-
-<video src="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-operator-demo.webm" poster="https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/operator-poster.png" controls width="100%"></video>
-
-Regenerate them against any running instance — see [`demo/README.md`](demo/README.md).
+It's assembled from three shorter clips — the first-run setup, the volunteer
+workflow (sale → draw → pickup), and the live TV board. Those clips are
+regenerated on demand against any running instance by the Playwright recorders
+in [`demo/`](demo/), so only the finished video is committed here.
 
 ---
 
