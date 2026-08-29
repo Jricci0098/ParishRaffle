@@ -4,7 +4,7 @@
     an event, 3 stations, 20 prizes, sample sales, and a few drawn/claimed winners.
 
 .EXAMPLE
-    ./deploy/seed-demo.ps1 -BaseUrl https://picnic-raffle-207884166310.us-central1.run.app -AdminPin 0068
+    ./deploy/seed-demo.ps1 -BaseUrl https://your-service.run.app -AdminPin <admin-pin>
 #>
 param(
     [Parameter(Mandatory = $true)][string]$BaseUrl,

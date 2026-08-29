@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from ..config import settings
 from ..schemas import PinLogin
+from ..security import pin_matches
 from ..services.errors import AuthError
 
 router = APIRouter()
@@ -9,10 +10,10 @@ router = APIRouter()
 
 @router.post("/auth/login")
 def login(body: PinLogin):
-    """Validate a PIN and return the associated role."""
-    if body.pin == settings.ADMIN_PIN:
+    """Validate a PIN and return the associated role (constant-time)."""
+    if pin_matches(body.pin, settings.ADMIN_PIN):
         return {"role": "admin"}
-    if body.pin == settings.VOLUNTEER_PIN:
+    if pin_matches(body.pin, settings.VOLUNTEER_PIN):
         return {"role": "volunteer"}
     raise AuthError("Incorrect PIN")
 
@@ -27,4 +28,5 @@ def public_config():
         "new_winner_highlight_seconds": settings.NEW_WINNER_HIGHLIGHT_SECONDS,
         "winners_per_page": settings.WINNERS_PER_PAGE,
         "allow_repeat_ticket_winners": settings.ALLOW_REPEAT_TICKET_WINNERS,
+        "require_pin_for_writes": settings.REQUIRE_PIN_FOR_WRITES,
     }

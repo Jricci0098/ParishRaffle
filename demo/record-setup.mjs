@@ -136,7 +136,11 @@ async function main() {
   await context.close();
   const p = video ? await video.path() : null;
   await browser.close();
-  console.log("VIDEO_SETUP=" + p);
+
+  // Copy to a stable name under media/ for build_narrated.py (gitignored).
+  fs.mkdirSync("media", { recursive: true });
+  if (p) fs.copyFileSync(p, "media/raffle-setup-demo.webm");
+  console.log("VIDEO_SETUP=media/raffle-setup-demo.webm");
 }
 
 main().catch((e) => {

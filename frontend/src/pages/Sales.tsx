@@ -3,8 +3,15 @@ import { Link } from "react-router-dom";
 
 import { Confirm } from "../components/Confirm";
 import { DemoBanner } from "../components/DemoBanner";
+import { useConfig } from "../hooks/useConfig";
 import { useWebSocket } from "../hooks/useWebSocket";
-import { ApiError, api, getAdminPin, setAdminPin } from "../services/api";
+import {
+  ApiError,
+  api,
+  ensureVolunteerPin,
+  getAdminPin,
+  setAdminPin,
+} from "../services/api";
 import type { SaleResult, Station } from "../types";
 
 const STATION_KEY = "raffle_station_id";
@@ -38,12 +45,19 @@ export function Sales() {
     setSalesOpen(s.sales_open);
   }, []);
 
+  const config = useConfig();
+
   useEffect(() => {
     api.stations().then(setStations).catch(() => setStations([]));
     refreshStatus();
     const saved = localStorage.getItem(STATION_KEY);
     if (saved) loadStation(Number(saved));
   }, [loadStation, refreshStatus]);
+
+  // When the server requires a PIN for writes, capture the volunteer PIN once.
+  useEffect(() => {
+    if (config?.require_pin_for_writes) ensureVolunteerPin();
+  }, [config]);
 
   useWebSocket({
     deviceName: station ? station.name : "Sales (unassigned)",

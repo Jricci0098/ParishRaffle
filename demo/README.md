@@ -9,18 +9,18 @@ Drives a real Chromium browser through the raffle and records video
 - **`record-demo.mjs`** — the operating workflow (sale → drawing → live TV
   display → pickup). **Seeds** the instance automatically if it is empty.
 
-## Recorded videos
+The finished, narrated cut is [`media/raffle-end-to-end.mp4`](media/raffle-end-to-end.mp4)
+(see the repo README). Each recorder produces one of its source clips:
 
-| 🛠️ Setup walkthrough (first run) |
-| :------------------------------: |
-| [![Setup walkthrough](media/setup-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-setup-demo.webm) |
+| Poster | Clip | Recorder |
+| --- | --- | --- |
+| ![Setup](media/setup-poster.png) | first-run setup | `record-setup.mjs` |
+| ![TV](media/tv-display-poster.png) | live TV board | `record-demo.mjs` |
+| ![Operator](media/operator-poster.png) | volunteer workflow | `record-demo.mjs` |
 
-| Public TV display — live winner board | Volunteer workflow — sale → draw → pickup |
-| :-----------------------------------: | :---------------------------------------: |
-| [![TV display demo](media/tv-display-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-tv-display-demo.webm) | [![Operator demo](media/operator-poster.png)](https://github.com/Jricci0098/ParishRaffle/raw/main/demo/media/raffle-operator-demo.webm) |
-
-Click a thumbnail to play the WebM. Committed copies live in
-[`media/`](media/); regenerate them with the recorders below.
+The individual `.webm` clips are **regenerated on demand** and are not committed
+(only the final MP4 and these poster frames are). Each recorder writes its clip
+to `media/raffle-*.webm` for the stitcher below.
 
 ## Run it
 
@@ -34,8 +34,8 @@ BASE_URL=http://localhost:8001 ADMIN_PIN=1234 node record-setup.mjs
 # Operating demo — local server (auto-seeds if empty):
 BASE_URL=http://localhost:8000 ADMIN_PIN=1234 npm run record
 
-# …or against the deployed demo:
-BASE_URL=https://picnic-raffle-207884166310.us-central1.run.app ADMIN_PIN=0068 npm run record
+# …or against a deployed instance:
+BASE_URL=https://your-service.run.app ADMIN_PIN=<admin-pin> npm run record
 ```
 
 The finished video path is printed at the end (`VIDEO_SETUP=…`, `VIDEO_OPERATOR=…`,

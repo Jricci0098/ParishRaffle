@@ -6,13 +6,17 @@ from ..schemas import ManualTicketEntry, SaleCreate, UndoSale
 from ..services import sales as sales_service
 from ..services import state
 from ..websocket import manager
-from .deps import require_admin
+from .deps import require_admin, require_write_access
 
 router = APIRouter()
 
 
 @router.post("/sales")
-def create_sale(body: SaleCreate, db: Session = Depends(get_db)):
+def create_sale(
+    body: SaleCreate,
+    db: Session = Depends(get_db),
+    _: str = Depends(require_write_access),
+):
     result = sales_service.complete_sale(
         db,
         station_id=body.station_id,

@@ -59,6 +59,13 @@ class Settings:
         "ALLOW_REPEAT_TICKET_WINNERS", False
     )
 
+    # Trust boundary. The write endpoints (record a sale, confirm a winner,
+    # claim a prize) are unauthenticated by default, which suits a trusted LAN
+    # where any device on the network is operated by a volunteer. Set this true
+    # for an internet-facing deployment to require the volunteer (or admin) PIN
+    # on those endpoints. See the "Security model" section of the README.
+    REQUIRE_PIN_FOR_WRITES: bool = _get_bool("REQUIRE_PIN_FOR_WRITES", False)
+
     @property
     def active_database_url(self) -> str:
         return self.DEMO_DATABASE_URL if self.DEMO_MODE else self.DATABASE_URL
