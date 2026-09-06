@@ -227,6 +227,14 @@ PIN** at the end.
 
 ---
 
+## Run on a Raspberry Pi (LAN)
+
+For running the event server on a Raspberry Pi — building the frontend off-box,
+a `systemd` service for auto-start, USB-SSD/SD-card durability, and power-loss
+notes — see **[docs/raspberry-pi.md](docs/raspberry-pi.md)**.
+
+---
+
 ## Local development (without Docker)
 
 **Backend:**
