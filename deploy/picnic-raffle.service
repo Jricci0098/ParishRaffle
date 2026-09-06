@@ -1,0 +1,21 @@
+[Unit]
+Description=Picnic Raffle Manager
+After=network-online.target
+Wants=network-online.target
+# If the database/backups live on a USB SSD mounted at /mnt/ssd, wait for it.
+# Remove or adjust this line if you keep data on the SD card.
+RequiresMountsFor=/mnt/ssd
+
+[Service]
+Type=simple
+# Adjust User and the paths below to match your install.
+User=pi
+WorkingDirectory=/home/pi/ParishRaffle/backend
+# Secrets and config live here (chmod 600) — not in this unit file.
+EnvironmentFile=/etc/picnic-raffle.env
+ExecStart=/home/pi/ParishRaffle/backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
